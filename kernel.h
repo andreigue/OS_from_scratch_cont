@@ -5,7 +5,7 @@ Adds a pcb to the tail of the linked list
 void addToReady(struct PCB*);
 
 
-int myinit2(FILE *p, int currentPage, int offset, int maxPage);
+int myinit(FILE *p, int currentPage, int offset, int maxPage);
 
 /*
 Returns the size of the queue
@@ -29,7 +29,7 @@ ERRORCODE 0 : NO ERROR
 ERRORCODE -3 : SCRIPT NOT FOUND
 ERRORCODE -5 : NOT ENOUGH RAM (EXEC)
 */
-int myinit(char*);
+//int myinit(char*);
 
 int scheduler();
 

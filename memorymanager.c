@@ -108,7 +108,7 @@ int defaultLoadingPages = 2; // defaults to loading two pages of program into RA
         printf("Cannot open %s\n", bsFileNameFull);
         return 0;
     }
-    //result = myinit2(bsFilePtr, 0, 0, pageCount);
+    result = myinit(bsFilePtr, 0, 0, pageCount);
 
 	
 
