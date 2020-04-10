@@ -21,12 +21,19 @@ PC = start
 start = start
 end = end
 */
+/*
 PCB* makePCB(int start, int end){
     PCB* pcb = (PCB*)malloc(sizeof(PCB));
     pcb->PC = start;
     pcb->start = start;
     pcb->end = end;
     return pcb;
+}
+*/
+PCB *makePCB(FILE *p, int curPage, int offset, int numberOfPages){
+	PCB *pcb;
+
+	return pcb;
 }
 
 

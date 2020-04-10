@@ -4,6 +4,9 @@ Adds a pcb to the tail of the linked list
 */
 void addToReady(struct PCB*);
 
+
+int myinit2(FILE *p, int currentPage, int offset, int maxPage);
+
 /*
 Returns the size of the queue
 */

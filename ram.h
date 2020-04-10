@@ -1,9 +1,10 @@
 #include<stdio.h>
 /*
 Ram structure implemented as an array.
-Size is 1000 strings
+Size is 40 strings
 */
-char* ram[1000];
+char* ram[40];
+void initRAM();
 
 /*
 This function will add the content of a file to the local ram array variable

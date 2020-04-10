@@ -7,9 +7,14 @@ int nextFree = 0;
 
 /*
 Ram structure implemented as an array.
-Size is 1000 strings
+Size is 40 strings
 */
-char *ram[1000]; 
+char *ram[40]; 
+
+void initRAM() {
+	int i;
+	for(i=0; i<40; i++) ram[i] = NULL;
+}
 
 /*
 This function will delete the content in ram between the 2 indices parameters (inclusive)

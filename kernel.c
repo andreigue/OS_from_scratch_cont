@@ -22,8 +22,15 @@ ReadyQueueNode* head = NULL;
 ReadyQueueNode* tail = NULL;
 int sizeOfQueue = 0;
 
+
+void boot(){
+	initRAM(); // there are no pages of code in RAM
+	system("rm -r ./BackingStore ; mkdir BackingStore");
+}
+
 int main(int argc, char const *argv[])
 {
+    boot();
     shellUI();
 }
 /*
@@ -79,21 +86,20 @@ ERRORCODE 0 : NO ERROR
 ERRORCODE -3 : SCRIPT NOT FOUND
 ERRORCODE -5 : NOT ENOUGH RAM (EXEC)
 */
-int myinit(char* filename){
+
+int myinit(FILE *p, int currentPage, int offset, int maxPage){
     // Open the filename to get FILE *
-    // call addToRam on that File *
-    // If error (check via start/end variable), return that error
-    // Else create pcb using MakePCB
-    // Then add it to the ReadyQueue
-    FILE * fp = fopen(filename,"r");
-    if (fp == NULL) return -3;
+    if (p == NULL) return -3;
     int start;
     int end;
-    addToRAM(fp,&start,&end);
-    fclose(fp);
-    if (start == -1) return -5;
-    PCB* pcb = makePCB(start,end);
-    addToReady(pcb);
+    addToRAM(p,&start,&end);// call addToRam on that File *
+    fclose(p);
+    if (start == -1) return -5;   // If error (check via start/end variable), return that error
+    PCB* pcb = makePCB(p, currentPage, offset, maxPage);     // Else create pcb using MakePCB
+	if (pcb != NULL) {
+		addToReady(pcb); // Then add it to the ReadyQueue
+		return 1;
+	}
     return 0;
 }
 

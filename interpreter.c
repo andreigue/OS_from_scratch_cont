@@ -4,6 +4,7 @@
 #include"shellmemory.h"
 #include"shell.h"
 #include"kernel.h"
+#include "memorymanager.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -83,38 +84,34 @@ static int run(char * words[]){
 }
 
 int exec(char * words[]){
-    //filter out duplicated text file names
+
+//filter out duplicated text file names
     char * filename[3] = { "_NONE_", "_NONE_", "_NONE_"};
     int nextFree = 0;
     int errorCode = 0;
+
     for (int i = 1; i <= 3; i++)
     {
         if ( strcmp(words[i],"_NONE_") != 0 ) {
-            int duplicate = FALSE;
-            for (int j = 0; j<i-1; j++){
-                if ( strcmp(filename[j],words[i]) == 0 ) {
-                    duplicate = TRUE;
-                    break;
-                }
-            }
-            if (duplicate){
-                displayCode(-6,words[i]);
-            } else {
+
+             
                 filename[nextFree] = strdup(words[i]);
-                nextFree++;
-                errorCode = myinit(words[i]);
-                if ( errorCode < 0){
+              /*  nextFree++;
+                errorCode = launcher(words[i]);
+                if ( errorCode != 0){
                     displayCode(errorCode,words[i]);
                     printf("EXEC COMMAND ABORTED...\n");
                     emptyReadyQueue();
                     return 0;
                 }
-            }
+            */
         // We've ran through every filenames, so get out of the for loop
         } else {
             break;
         }
     }
+FILE* p[3];
+int results[3];
 
     printf("|----------| ");
     printf("\tSTARTING CONCURRENT PROGRAMS ( ");
@@ -122,16 +119,20 @@ int exec(char * words[]){
     {
         if ( strcmp(filename[i],"_NONE_") != 0 ){
             printf("%s ", filename[i]);
+	    p[i] = fopen(filename[i],"rt");
+	    results[i] = launcher(p[i]);
+	    if(results[i]==0) printf("launcher error with %s\n\n", filename[i]); 
         }
     }
     printf(")\t|----------|\n");
-
+   
     scheduler();
 
     printf("|----------| ");
     printf("\tTERMINATING ALL CONCURRENT PROGRAMS");
     printf("\t|----------|\n");
     return 0;
+
 }
 
 /*
