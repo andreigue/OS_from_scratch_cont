@@ -5,6 +5,8 @@ Adds a pcb to the tail of the linked list
 void addToReady(struct PCB*);
 
 
+PCB* tail; 
+
 int myinit(FILE *p, int currentPage, int offset, int maxPage);
 
 /*

@@ -76,7 +76,7 @@ users gets to use the shell.
 int shellUI()
 {
     printf(
-        "\n----------------------------------\nKernel 1.0 loaded!\nWelcome to the Andrei Guevorkian Shell!\nShell Version 2.0 Updated February 2020\n----------------------------------\n");
+        "\n----------------------------------\nKernel 1.0 loaded!\nWelcome to the Andrei Guevorkian Shell!\nShell Version 3.0 Updated April 2020\n----------------------------------\n");
     char prompt[15] = {'$', '\0'};
     char userinput[1000];
     int errorCode;

@@ -3,8 +3,46 @@
 #include <string.h>
 #include <dirent.h>
 #include <math.h>
+#include <unistd.h>
+#include <time.h>
 
 #include "kernel.h"
+#include "ram.h"
+//#include "pcb.h"
+
+// Checks if frameNumber exists in the pageTable. Returns 0 if it doesnt exist, 1 if it exists.
+int checkPageTable(int frameNumber, int* pageTable){
+    int exists = 0;
+
+    int i;
+    for(i=0; i<10; i++){
+        if(pageTable[i] == frameNumber){
+            exists = 1;
+            break;
+        }
+    }
+    return exists;
+}
+
+int findVictim(PCB *p){
+    int victimIndex = -1;
+
+    // generate random int
+    srand(time(NULL));
+    int r = rand() % 10;
+
+    do{
+        // check if r belongs to the pages of the PCB (page table)
+        if(!checkPageTable(r, p->pageTable)){
+            victimIndex = r;
+        }else{
+            r = (r+1) % 10;
+        }
+    } while(victimIndex == -1);
+
+    return victimIndex;
+}
+
 
 int countTotalPages(FILE *f){
     // Assume FILE* f != NULL, error case managed before calling this method.
@@ -25,6 +63,32 @@ int countTotalPages(FILE *f){
     return numberOfPage;
 }
 
+FILE *findPage(int pageNumber, FILE *f){
+    //FILE *fp2 = fdopen (dup(fileno(f)),"r");
+
+    char buf[1000];
+    int i;
+    for(i = 0; i < 4 * (pageNumber); i++){
+        fgets(buf,999,f);
+    }
+  
+
+    //fseek(f, 0, SEEK_SET ); // For some reason, f is moved as well as fp2
+
+    return f;
+}
+
+int findFrame(){ 
+    int index = -1;
+    int i;
+    for(i=0; i < 40; i++){
+        if(ram[i] == NULL)  {
+            index = i;
+            break;
+        }
+    }
+    return index;
+}
 
 // helper to name temp files for copyFileToBackingStore
 int nextFileIndex(){
@@ -82,14 +146,10 @@ char *copyFileToBackingStore(FILE* p){
 
 
 
-
-
-
-
 int launcher (FILE* p){
 	int result = 0;
 
-int defaultLoadingPages = 2; // defaults to loading two pages of program into RAM when launched
+	int defaultLoadingPages = 2; // defaults to loading two pages of program into RAM when launched
 
     FILE *bsFilePtr, *bsFilePtrCpy;
     
@@ -110,10 +170,24 @@ int defaultLoadingPages = 2; // defaults to loading two pages of program into RA
     }
     result = myinit(bsFilePtr, 0, 0, pageCount);
 
+	int pageNumber;
+    for(pageNumber=0; pageNumber < defaultLoadingPages && pageNumber < pageCount; pageNumber++){
+	
+	bsFilePtrCpy = fopen(bsFileNameFull, "rt");	
+        if(bsFilePtr == NULL){				//check for error
+            printf("Cannot open copy %s\n", bsFileNameFull);
+            return 0;
+        }
+
+	FILE *desiredPage = findPage(pageNumber, bsFilePtrCpy);	
+	
+	int frameNumber = -1;
+        int victimFrame = -1;
+        frameNumber = findFrame();
+	if(frameNumber == -1) victimFrame = findVictim(tail);
 	
 
-
-
+    }	//big for loop
 	
 	return result;
 }
