@@ -10,6 +10,19 @@
 #include "ram.h"
 //#include "pcb.h"
 
+int updatePageTable(PCB *p, int pageNumber, int frameNumber, int victimFrame){
+    int result = 0;
+    int index;
+
+    if(p == NULL) result = 1;
+    else{
+        if (frameNumber == -1) index = victimFrame;
+        else index = frameNumber;
+        p->pageTable[pageNumber] = index;
+    }
+    return result;
+}
+
 // Checks if frameNumber exists in the pageTable. Returns 0 if it doesnt exist, 1 if it exists.
 int checkPageTable(int frameNumber, int* pageTable){
     int exists = 0;
@@ -63,19 +76,20 @@ int countTotalPages(FILE *f){
     return numberOfPage;
 }
 
-FILE *findPage(int pageNumber, FILE *f){
-    //FILE *fp2 = fdopen (dup(fileno(f)),"r");
-
-    char buf[1000];
-    int i;
-    for(i = 0; i < 4 * (pageNumber); i++){
-        fgets(buf,999,f);
-    }
-  
-
-    //fseek(f, 0, SEEK_SET ); // For some reason, f is moved as well as fp2
-
-    return f;
+void loadPage(int pageNumber, FILE *f, int frameNumber){
+   
+    	int lineNumbStart = 4* pageNumber;
+	int lineNumbEnd= lineNumbStart +4;
+	char line[256];
+	int i=0;
+	while(fgets(line, sizeof(line),f)){
+		if(i>=lineNumbStart && i<lineNumbEnd){
+			addToRAM(f, &lineNumbStart, & lineNumbEnd);
+		}else if(i==lineNumbEnd){
+			break;
+		}
+		i++;
+	}
 }
 
 int findFrame(){ 
@@ -178,14 +192,18 @@ int launcher (FILE* p){
             printf("Cannot open copy %s\n", bsFileNameFull);
             return 0;
         }
-
-	FILE *desiredPage = findPage(pageNumber, bsFilePtrCpy);	
-	
 	int frameNumber = -1;
         int victimFrame = -1;
         frameNumber = findFrame();
+
+	loadPage(pageNumber, bsFilePtrCpy, frameNumber);	
 	if(frameNumber == -1) victimFrame = findVictim(tail);
 	
+	result = updatePageTable(tail, pageNumber, frameNumber, victimFrame);
+        if(result != 0){
+            printf("PCB is NULL\n");
+            return 0;
+        }          
 
     }	//big for loop
 	
