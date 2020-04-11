@@ -120,11 +120,17 @@ int scheduler() {
 
 	int i=0;
 	// execute the processes
-	while(getHead() != NULL) {
-		pcb = getFromReady();
+	while(head != NULL) {
+		
+		//pop head of queue
+        	PCB* pcb = pop();
+        	//copy PC of PCB to IP of CPU
+        	CPU.IP = pcb->PC;
+
 
 		if (pcb != NULL) {
-			//setCPU(ram[pcb->pageTable[(pcb->PC_page)]], pcb->PC_offset);			//take care of this. do CPU.PC = pcb->PC_offset;
+			
+			CPU.offset = pcb->PC_offset;
 			
 			result = run(2);
 		
@@ -146,7 +152,7 @@ int scheduler() {
 						int frame = pcb->pageTable[(pcb->PC_page)]; // to be used as index for ram[index]
 						//printf("Pagefault checking: %d\n", frame);
 						if(frame != -1){
-							pcb->PCf = ram[frame];
+							pcb->PC = ram[frame];
 							pcb->PC_offset = 0;
 							addToReady(pcb);
 						}
@@ -164,9 +170,6 @@ int scheduler() {
 							pcb->PC_offset = 0;
 
 							addToReady(pcb);
-
-
-
 						}
 					}
 
@@ -182,42 +185,6 @@ int scheduler() {
 }
 
 
-
-/*
-int scheduler(){
-    // set CPU quanta to default, IP to -1, IR = NULL
-    CPU.quanta = DEFAULT_QUANTA;
-    CPU.IP = -1;
-    while (size() != 0){
-        //pop head of queue
-        PCB* pcb = pop();
-        //copy PC of PCB to IP of CPU
-        CPU.IP = pcb->PC;
-
-        int isOver = FALSE;
-        int remaining = (pcb->end) - (pcb->PC) + 1;
-        int quanta = DEFAULT_QUANTA;
-
-        if (DEFAULT_QUANTA >= remaining) {
-            isOver = TRUE;
-            quanta = remaining;
-        }
-
-        int errorCode = run(quanta);
-
-        if ( errorCode!=0 || isOver ){
-            removeFromRam(pcb->start,pcb->end);
-            free(pcb);
-        } else {
-            pcb->PC += DEFAULT_QUANTA;
-            addToReady(pcb);
-        }
-    }
-    // reset RAM
-    resetRAM();
-    return 0;
-}
-*/
 /*
 Flushes every pcb off the ready queue in the case of a load error
 */

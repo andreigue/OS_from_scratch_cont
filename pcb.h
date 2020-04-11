@@ -25,7 +25,6 @@ typedef struct PCB {
 	int pages_max; // total number of pages
 } PCB;
 
-
 /*
 Passes 2 parameters (start , end)
 This method creates a PCB with fields set as this:
@@ -37,4 +36,4 @@ PCB *makePCB(FILE *p, int curPage, int offset, int numberOfPages);
 
 
 PCB *getFromReady();
-PCB *getHead();
+

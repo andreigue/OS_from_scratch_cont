@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+//#include "pcb.h" 
+//#include "kernel.h"
 /*
 PCB has 3 fields
 PC : Points to the the current line reached for that program
 start: Points to first line of that program
 end: Points to last line of that program
 */
-
 
 /*
 typedef struct PCB
@@ -68,22 +70,4 @@ PCB *makePCB(FILE *p, int curPage, int offset, int numberOfPages){
 	return pcb;
 }
 
-
-
-PCB *getHead() {
-	return head;
-}
-PCB *getFromReady() {
-	PCB *temp;
-
-	if (head == NULL) return NULL;
-
-	temp = head;
-	head = head->next;
-	temp->next = NULL;
-
-	if (head == NULL) tail = NULL;
-
-	return temp;
-}
 

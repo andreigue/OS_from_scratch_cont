@@ -10,6 +10,19 @@
 #include "ram.h"
 //#include "pcb.h"
 
+int updatePageTable(PCB *p, int pageNumber, int frameNumber, int victimFrame){
+    int result = 0;
+    int index;
+
+    if(p == NULL) result = 1;
+    else{
+        if (frameNumber == -1) index = victimFrame;
+        else index = frameNumber;
+        p->pageTable[pageNumber] = index;
+    }
+    return result;
+}
+
 // Checks if frameNumber exists in the pageTable. Returns 0 if it doesnt exist, 1 if it exists.
 int checkPageTable(int frameNumber, int* pageTable){
     int exists = 0;
