@@ -78,6 +78,22 @@ FILE *findPage(int pageNumber, FILE *f){
     return f;
 }
 
+void loadPage(int pageNumber, FILE *f, int frameNumber){
+   
+    	int lineNumbStart = 4* pageNumber;
+	int lineNumbEnd= lineNumbStart +4;
+	char line[256];
+	int i=0;
+	while(fgets(line, sizeof(line),f)){
+		if(i>=lineNumbStart && i<lineNumbEnd){
+			addToRAM(f, &lineNumbStart, & lineNumbEnd);
+		}else if(i==lineNumbEnd){
+			break;
+		}
+		i++;
+	}
+}
+
 int findFrame(){ 
     int index = -1;
     int i;

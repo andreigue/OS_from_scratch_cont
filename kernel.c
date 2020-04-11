@@ -146,7 +146,7 @@ int scheduler() {
 						int frame = pcb->pageTable[(pcb->PC_page)]; // to be used as index for ram[index]
 						//printf("Pagefault checking: %d\n", frame);
 						if(frame != -1){
-							pcb->PC = ram[frame];
+							pcb->PCf = ram[frame];
 							pcb->PC_offset = 0;
 							addToReady(pcb);
 						}
@@ -158,11 +158,8 @@ int scheduler() {
         					frameNumber = findFrame();
         					if(frameNumber == -1) victimFrame = findVictim(pcb);
 
-							FILE *nextPage = findPage(pcb->PC_page, pcb->PCf);
-							
 							updatePageTable(pcb, pcb->PC_page, frameNumber, victimFrame);
-							loadPage();
-							updateFrame(frameNumber,victimFrame, nextPage);
+							loadPage(pcb->PC_page, findPage(pcb->PC_page, pcb->PCf), frameNumber);
 							pcb->PC = ram[frame];
 							pcb->PC_offset = 0;
 
