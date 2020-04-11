@@ -9,7 +9,25 @@ struct CPU {
     int IP; 
     char IR[1000]; 
     int quanta; 
+    int offset;
 } CPU;
+
+void initCPU() {
+	CPU.quanta = 2;
+	CPU.IP     = 0;
+	CPU.IR[0]  = '\0';
+	CPU.offset = 0;
+}
+
+void setCPU(int PC, int offset) {
+	CPU.IP    = PC;
+	CPU.IR[0] = '\0';
+	CPU.offset = offset;
+}
+
+int getCPUoffset(){
+	return CPU.offset;
+}
 
 /*
 This method passes a quanta.

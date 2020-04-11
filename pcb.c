@@ -69,3 +69,21 @@ PCB *makePCB(FILE *p, int curPage, int offset, int numberOfPages){
 }
 
 
+
+PCB *getHead() {
+	return head;
+}
+PCB *getFromReady() {
+	PCB *temp;
+
+	if (head == NULL) return NULL;
+
+	temp = head;
+	head = head->next;
+	temp->next = NULL;
+
+	if (head == NULL) tail = NULL;
+
+	return temp;
+}
+

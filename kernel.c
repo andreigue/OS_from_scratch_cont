@@ -5,7 +5,7 @@
 #include"ram.h"
 #include"cpu.h"
 #include"interpreter.h"
-
+#include "memorymanager.h"
 /*
 This is a node in the Ready Queue implemented as 
 a linked list.
@@ -103,6 +103,90 @@ int myinit(FILE *p, int currentPage, int offset, int maxPage){
     return 0;
 }
 
+
+void terminate(PCB *p) {
+	
+	resetRAM();
+	free(p);
+}
+
+
+int scheduler() {
+	PCB *pcb;
+	int result;
+
+	// initialize CPU
+	initCPU();
+
+	int i=0;
+	// execute the processes
+	while(getHead() != NULL) {
+		pcb = getFromReady();
+
+		if (pcb != NULL) {
+			//setCPU(ram[pcb->pageTable[(pcb->PC_page)]], pcb->PC_offset);			//take care of this. do CPU.PC = pcb->PC_offset;
+			
+			result = run(2);
+		
+			if (result != 0){
+				removeFromRam(pcb->start,pcb->end);
+            			free(pcb);
+				
+			} 
+			else{
+				if(getCPUoffset() > 3){		// or: == 4
+					
+					//PAGEFAULT
+					pcb->PC_page++;
+					if(pcb->PC_page > pcb->pages_max-1){
+						//Terminate program
+						terminate(pcb);
+					}else{
+
+						int frame = pcb->pageTable[(pcb->PC_page)]; // to be used as index for ram[index]
+						//printf("Pagefault checking: %d\n", frame);
+						if(frame != -1){
+							pcb->PC = ram[frame];
+							pcb->PC_offset = 0;
+							addToReady(pcb);
+						}
+						else{
+							fseek(pcb->PCf, 0, SEEK_SET);
+							int frameNumber = -1;
+        					int victimFrame = -1;
+        
+        					frameNumber = findFrame();
+        					if(frameNumber == -1) victimFrame = findVictim(pcb);
+
+							FILE *nextPage = findPage(pcb->PC_page, pcb->PCf);
+							
+							updatePageTable(pcb, pcb->PC_page, frameNumber, victimFrame);
+							loadPage();
+							updateFrame(frameNumber,victimFrame, nextPage);
+							pcb->PC = ram[frame];
+							pcb->PC_offset = 0;
+
+							addToReady(pcb);
+
+
+
+						}
+					}
+
+				}else{
+					pcb->PC_offset = getCPUoffset();
+					addToReady(pcb);
+					
+				}
+			}
+		} 	
+	}
+	return result;
+}
+
+
+
+/*
 int scheduler(){
     // set CPU quanta to default, IP to -1, IR = NULL
     CPU.quanta = DEFAULT_QUANTA;
@@ -136,7 +220,7 @@ int scheduler(){
     resetRAM();
     return 0;
 }
-
+*/
 /*
 Flushes every pcb off the ready queue in the case of a load error
 */

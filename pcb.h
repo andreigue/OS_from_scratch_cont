@@ -34,3 +34,7 @@ start = start
 end = end
 */
 PCB *makePCB(FILE *p, int curPage, int offset, int numberOfPages);
+
+
+PCB *getFromReady();
+PCB *getHead();
